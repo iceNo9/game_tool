@@ -1,5 +1,7 @@
 import os
 import shutil
+import sys
+import argparse
 
 def copy_directory(src_path):
     """ 拷贝 src_path 到当前目录 """
@@ -25,13 +27,19 @@ homeDir = objShell.ExpandEnvironmentStrings("%USERPROFILE%")
 
 fullPath = homeDir & "\\{rel_path.replace("/", "\\")}"
 
-' 逐级检查并创建目录
-CreateDirs fullPath
-
 ' 删除旧文件夹，防止冲突
 If objFSO.FolderExists(fullPath) Then
-    objFSO.DeleteFolder fullPath, True
+    ' 弹出选择框，提示用户是否恢复存档
+    response = MsgBox("即将重置存档,是否继续重置?如果不想覆盖存档请点否且手动备份"+ fullPath, vbYesNo + vbQuestion, "恢复确认")
+    If response = 6 Then ' 用户选择了“是”
+        objFSO.DeleteFolder fullPath, True
+    ElseIf response = 7 Then ' 用户选择了“否”
+        WScript.Quit ' 退出脚本
+    End If
 End If
+
+' 逐级检查并创建目录
+CreateDirs fullPath
 
 ' 复制文件夹
 If objFSO.FolderExists("{copied_full_path}") Then
@@ -62,16 +70,22 @@ End Sub
 
     return vbs_path
 
-def main(src_path):
-    dst_path = copy_directory(src_path)
-    vbs_path = generate_vbs(src_path)
-    print(f"文件已复制到: {dst_path}")
-    print(f"VBS 脚本已生成: {vbs_path}")
+def main():
+    parser = argparse.ArgumentParser(description="GameTool - 复制目录并生成 VBS 脚本")
+    parser.add_argument("-g", "--generate", metavar="PATH", type=str, help="拷贝目录并生成 VBS 脚本", required=False)
+    parser.add_argument("-V", "--version", action="version", version="GameTool 1.0.0")
+
+    args = parser.parse_args()
+
+    if args.generate:
+        try:
+            dst_path = copy_directory(args.generate)
+            vbs_path = generate_vbs(args.generate)
+            print(f"文件已复制到: {dst_path}")
+            print(f"VBS 脚本已生成: {vbs_path}")
+        except Exception as e:
+            print(f"发生错误: {e}")
+            sys.exit(1)
 
 if __name__ == "__main__":
-    import sys
-    if len(sys.argv) != 2:
-        print("使用方法: python gametool.py <路径>")
-        sys.exit(1)
-
-    main(sys.argv[1])
+    main()
