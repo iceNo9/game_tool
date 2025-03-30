@@ -73,7 +73,7 @@ End Sub
 def main():
     parser = argparse.ArgumentParser(description="GameTool - 复制目录并生成 VBS 脚本")
     parser.add_argument("-g", "--generate", metavar="PATH", type=str, help="拷贝目录并生成 VBS 脚本", required=False)
-    parser.add_argument("-V", "--version", action="version", version="GameTool 1.0.0")
+    parser.add_argument("-V", "--version", action="version", version="GameTool 1.0.1")
 
     args = parser.parse_args()
 
