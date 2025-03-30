@@ -30,7 +30,7 @@ fullPath = homeDir & "\\{rel_path.replace("/", "\\")}"
 ' 删除旧文件夹，防止冲突
 If objFSO.FolderExists(fullPath) Then
     ' 弹出选择框，提示用户是否恢复存档
-    response = MsgBox("即将重置存档,是否继续重置?如果不想覆盖存档请点否且手动备份"+ fullPath, vbYesNo + vbQuestion, "恢复确认")
+    response = MsgBox("即将重置存档,是否继续重置?如果不想覆盖存档请点否且手动备份"+fullPath, vbYesNo + vbQuestion, "恢复确认")
     If response = 6 Then ' 用户选择了“是”
         objFSO.DeleteFolder fullPath, True
     ElseIf response = 7 Then ' 用户选择了“否”
@@ -42,11 +42,11 @@ End If
 CreateDirs fullPath
 
 ' 复制文件夹
-If objFSO.FolderExists("{copied_full_path}") Then
-    objFSO.CopyFolder "{copied_full_path}", fullPath, True
+If objFSO.FolderExists(fullPath) Then
+    objFSO.CopyFolder "{copied_dir}", fullPath, True
     MsgBox("存档恢复成功")
 Else
-    MsgBox("存档恢复失败,请手动复制到路径:{copied_full_path}")
+    MsgBox("存档恢复失败,请手动复制到用户目录下:{rel_path}")
 End If
 
 Sub CreateDirs(path)
